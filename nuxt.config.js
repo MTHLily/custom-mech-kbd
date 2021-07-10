@@ -31,6 +31,7 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/utils',
+    '@/plugins/mq',
     { src: '@/plugins/quill-editor', ssr: false },
   ],
 
@@ -73,6 +74,7 @@ export default {
         },
         ssr: true,
       },
+      firestore: true,
       storage: true,
     },
   },
@@ -96,5 +98,8 @@ export default {
     //   }),
     // ],
     transpile: [/^element-ui/],
+  },
+  router: {
+    'exact-active-class': 'is-active',
   },
 }

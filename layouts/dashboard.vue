@@ -6,12 +6,31 @@
           <template slot="title">
             <i class="el-icon-message"></i>Pages
           </template>
-          <el-menu-item index="1-1" @click="link('/dashboard/pages')"
-            >Manage Pages</el-menu-item
+
+          <router-link
+            to="/dashboard/pages"
+            custom
+            v-slot="{ isExactActive, navigate }"
           >
-          <el-menu-item index="1-2" @click="link('/dashboard/pages/create')"
-            >Create Page</el-menu-item
+            <el-menu-item
+              index="1-1"
+              @click="navigate"
+              :class="{ 'is-active': isExactActive }"
+              >Manage Pages</el-menu-item
+            >
+          </router-link>
+          <router-link
+            to="/dashboard/pages/create"
+            custom
+            v-slot="{ isExactActive, navigate }"
           >
+            <el-menu-item
+              index="1-2"
+              :class="{ 'is-active': isExactActive }"
+              @click="navigate"
+              >Create Page</el-menu-item
+            >
+          </router-link>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title"
@@ -70,6 +89,7 @@ export default {
       this.$router.push(route)
     },
   },
+  mounted() {},
 }
 </script>
 

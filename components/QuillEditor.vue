@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="container">
     <client-only>
       <quill-editor
         ref="editor"
@@ -8,24 +8,6 @@
         :options="editorOption"
         @ready="onEditorReady"
       />
-
-      <el-dialog
-        title="Insert Embedded Video"
-        width="30%"
-        :visible.sync="dialog.embedVideo"
-      >
-        <el-input
-          v-model="form.embedVideo"
-          autocomplete="off"
-          placeholder="Video URL"
-        ></el-input>
-        <span slot="footer">
-          <el-button @click="dialog.embedVideo = false">Cancel</el-button>
-          <el-button type="primary" @click="insertEmbeddedVideo"
-            >Confirm</el-button
-          >
-        </span>
-      </el-dialog>
     </client-only>
   </section>
 </template>
@@ -61,7 +43,7 @@ export default {
       editorOption: {
         // Some Quill options...
         theme: 'snow',
-        placeholder: 'Start writing your post here...',
+        placeholder: 'Start writing your page here...',
         modules: {
           toolbar: {
             container: [
@@ -100,7 +82,6 @@ export default {
   },
   methods: {
     onEditorReady(editor) {
-      console.log('EDITOR READY')
       const loadingInstance = this.$loading()
       loadingInstance.close()
     },
@@ -116,7 +97,7 @@ export default {
           text: `Uploading image...`,
         })
 
-        await this.$customUtils
+        await this.$utils
           .uploadImageToFirebase(file, `documents/pagePostImages/${file.name}`)
           .then((image) => {
             this.editor.insertEmbed(
@@ -136,17 +117,13 @@ export default {
       }
     },
     onVideo() {
-      this.dialog.embedVideo = true
-      this.lastSelection = this.editor.getSelection()
-    },
-    insertEmbeddedVideo() {
-      this.editor.insertEmbed(
-        this.lastSelection.index,
-        'video',
-        this.form.embedVideo
-      )
-      this.form.embedVideo = ''
-      this.dialog.embedVideo = true
+      const lastSelection = this.editor.getSelection()
+      this.$prompt('Insert embedded video.', {
+        confirmButtonText: 'Insert',
+        cancelButtonText: 'Cancel',
+      }).then(({ value }) => {
+        this.editor.insertEmbed(lastSelection.index, 'video', value)
+      })
     },
   },
   mounted() {
@@ -162,13 +139,15 @@ export default {
   width: 100%;
   margin: 0 auto;
   padding: 0;
+  border-radius: 4px;
   .quill-editor {
     display: flex;
     flex-direction: column;
-    min-height: 30rem;
+    border-radius: 4px;
     .ql-container {
       height: 100%;
       flex-grow: 1;
+      border-radius: 4px;
     }
   }
 }

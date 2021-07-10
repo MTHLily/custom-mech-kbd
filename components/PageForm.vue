@@ -1,5 +1,8 @@
 <template>
-  <el-container direction="vertical">
+  <el-container
+    direction="vertical"
+    style="padding: 2rem; border: solid 1px #ccc; border-radius: 4px"
+  >
     <el-form ref="form" :rules="rules" :model="form" label-width="auto">
       <el-row type="flex" :gutter="20">
         <el-col>
@@ -17,7 +20,7 @@
           <el-form-item label="Page Cover Image" prop="pageCoverImageUrl">
             <!-- <input type="hidden" v-model="pageCoverImageUrl" /> -->
             <el-row type="flex">
-              <el-col :span="3">
+              <el-col :span="4">
                 <el-popover
                   v-if="!form.pageTitle"
                   placement="top-start"
@@ -26,7 +29,12 @@
                   trigger="hover"
                   content="Please put in a page title before you upload a cover image."
                 >
-                  <el-button slot="reference" size="small" type="danger"
+                  <el-button
+                    slot="reference"
+                    size="small"
+                    type="info"
+                    plain
+                    icon="el-icon-close"
                     >Upload</el-button
                   >
                 </el-popover>
@@ -35,13 +43,17 @@
                   v-else
                   size="small"
                   type="primary"
+                  icon="el-icon-upload2"
                   @click="uploadCover"
                   :disabled="!form.pageTitle"
                   >Upload</el-button
                 >
               </el-col>
               <el-col :span="3" v-if="form.pageCoverImageUrl">
-                <el-button size="mini" @click="dialog.showCoverPreview = true"
+                <el-button
+                  size="mini"
+                  @click="dialog.showCoverPreview = true"
+                  icon="el-icon-picture-outline"
                   >Preview Cover Image</el-button
                 >
                 <el-dialog
@@ -60,15 +72,22 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item prop="pageContent">
+      <el-form-item prop="pageContent" label="Page Content">
         <quill-editor v-model="form.pageContent" :error="errors.pageContent" />
       </el-form-item>
-      {{ form.pageContent }}
     </el-form>
     <el-row type="flex" justify="center" style="margin-top: 2rem">
       <el-col :offset="4" :span="8">
-        <el-button @click="resetForm">Reset</el-button>
-        <el-button @click="submitForm">Save</el-button>
+        <el-button
+          @click="resetForm"
+          type="danger"
+          plain
+          icon="el-icon-refresh-left"
+          >Reset</el-button
+        >
+        <el-button @click="submitForm" type="primary" icon="el-icon-edit"
+          >Save</el-button
+        >
       </el-col>
     </el-row>
   </el-container>
@@ -140,19 +159,24 @@ export default {
   methods: {
     submitForm() {
       this.$refs.form.validate((valid, rules) => {
-        console.log('FROM SUBMIT FORM', valid, rules)
-        this.$message({
-          message: 'Your input is not valid.',
-          type: 'error',
-        })
-
         if (rules.pageContent) this.errors.pageContent = true
         else this.errors.pageContent = false
+
+        if (valid) {
+          this.$emit('formSubmit', { slug: this.titleSlug, ...this.form })
+          return
+        }
+
+        this.$message({
+          message: 'Fill in all the fields.',
+          type: 'error',
+        })
       })
     },
 
     resetForm() {
       this.$refs.form.resetFields()
+      this.errors.pageContent = false
     },
 
     uploadCover() {
@@ -167,7 +191,7 @@ export default {
           text: `Uploading image...`,
         })
 
-        await this.$customUtils
+        await this.$utils
           .uploadImageToFirebase(
             file,
             `documents/pagePostCover/${this.titleSlug}.${file.name
