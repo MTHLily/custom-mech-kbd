@@ -8,13 +8,21 @@
       trigger="hover"
       :content="formattedDate"
     >
-      <a :href="`/page/${pageData.slug}`" slot="reference">
-        <el-image
-          fit="cover"
-          class="page-thumbnail"
-          :src="pageData.pageCoverImageUrl"
-        ></el-image>
-      </a>
+      <div slot="reference">
+        <router-link
+          :to="`/page/${pageData.slug}`"
+          custom
+          v-slot="{ navigate }"
+        >
+          <a href="#" @click="navigate">
+            <el-image
+              fit="cover"
+              class="page-thumbnail"
+              :src="pageData.pageCoverImageUrl"
+            ></el-image>
+          </a>
+        </router-link>
+      </div>
     </el-popover>
   </div>
 </template>
